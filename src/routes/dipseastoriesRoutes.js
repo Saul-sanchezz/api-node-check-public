@@ -1,0 +1,24 @@
+const express = require("express");
+const router = express.Router()
+const { 
+  charges,
+} = require("../controllers/dipseastoriesController.js");
+// const checkAuth = require("../middleware/checkAuth.js");
+
+// const {
+//   validacionRegistrar,
+//   validacionAutenticar,
+//   validacionOlvidePassword,
+//   validacionObtenerUsuario,
+//   validacionAcctualizarUsuario,
+//   validacionEliminarUsuario
+// } = require("../validations/userValidation.js")
+
+router.post("/charges", charges)
+
+
+module.exports = router
+
+
+
+

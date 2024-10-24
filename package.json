@@ -1,0 +1,30 @@
+{
+  "name": "api-node-check",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon src/index.js",
+    "dev2": "nodemon src/link.js",
+    "dev3": "nodemon src/mipagina.js",
+    "dev4": "nodemon src/ny.js",
+    "dev5": "nodemon src/dipsea.js",
+    "dev6": "nodemon src/dipseaCheck",
+    "auth": "nodemon src/authentication.js",
+    "start": "node src/index.js",
+    "linux": "node src/pruebaLinux.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@playwright/browser-chromium": "^1.48.0",
+    "@playwright/browser-firefox": "^1.48.0",
+    "@playwright/browser-webkit": "^1.48.0",
+    "cors": "^2.8.5",
+    "express": "^4.21.1",
+    "express-validator": "^7.2.0",
+    "playwright": "^1.48.0"
+  }
+}
