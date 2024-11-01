@@ -13,7 +13,10 @@
     "dev6": "nodemon src/dipseaCheck",
     "auth": "nodemon src/authentication.js",
     "start": "node src/index.js",
-    "linux": "node src/pruebaLinux.js"
+    "linux": "node src/pruebaLinux.js",
+    "amazon": "node src/amazon.js",
+    "crypto": "node src/crypto.js",
+    "clip": "node src/clip.js"
   },
   "keywords": [],
   "author": "",
@@ -23,6 +26,7 @@
     "@playwright/browser-firefox": "^1.48.0",
     "@playwright/browser-webkit": "^1.48.0",
     "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
     "express": "^4.21.1",
     "express-validator": "^7.2.0",
     "playwright": "^1.48.0"

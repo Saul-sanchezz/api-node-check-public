@@ -10,10 +10,12 @@ async function pruevas() {
     const context = await browser.newContext();
     // await context.addCookies(cookies);
     const page = await context.newPage();
-    await page.goto('https://www.google.com/', {
+    await page.goto('https://mobile-check-app-multi.netlify.app/charges', {
       waitUntil: 'domcontentloaded'
     });
     await page.waitForTimeout(5000);
+    const msg = await page.locator("h1").innerText();
+    console.log(msg);
     await page.close();
     await browser.close();
   } catch (error) {
