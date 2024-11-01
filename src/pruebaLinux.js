@@ -6,7 +6,7 @@ async function pruevas() {
     // const storageState = JSON.parse(fs.readFileSync('authState.json'));
     // console.log("estorage...", storageState)   
     // const cookies = JSON.parse(fs.readFileSync('cookies.json'));
-    const browser = await chromium.launch({ headless: false, });
+    const browser = await chromium.launch({ headless: true, });
     const context = await browser.newContext();
     // await context.addCookies(cookies);
     const page = await context.newPage();
