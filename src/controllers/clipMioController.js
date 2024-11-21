@@ -68,7 +68,7 @@ const charges = (req, res) => {
         await page.locator("button[id='submit']").click()
         try {
           const response = await page.waitForResponse('https://api.payclip.com/payment',
-            { timeout: 6000 });
+            { timeout: 7000 });
           console.log(response)
         } catch (error) {
           if (error?.name === "TimeoutError") {

@@ -11,16 +11,22 @@ const { chromium } = require("playwright");
     await page.goto('https://buy.stripe.com/4gwg0Z1UF7QM6Big0O?prefilled_email=juanjoseamapasa%40gmail.com', {
       waitUntil: 'domcontentloaded'
     });
+    // await page.route('https://hcaptcha.com/**', route => route.abort());
     await page.waitForTimeout(5000);
+    const botonSubmit2 = await page.locator("button[type='submit']").click();
     const botonLink = await page.$('.LinkButton-inner');
     console.log("link", botonLink);
-    await page.keyboard.press('Tab');
     await page.waitForTimeout(5000);
-    await page.keyboard.press('Tab');
-    await page.waitForTimeout(5000);
-    await page.keyboard.press('Tab');
-    await page.waitForTimeout(5000);
-    await page.keyboard.press('Tab');
+    // await page.keyboard.down('Shift');
+    // await page.keyboard.press('Tab');
+    // await page.keyboard.up('Shift');
+    // await page.keyboard.press('Tab');
+    // await page.waitForTimeout(5000);
+    // await page.keyboard.press('Tab');
+    // await page.waitForTimeout(5000);
+    // await page.keyboard.press('Tab');
+    // await page.waitForTimeout(5000);
+    // await page.keyboard.press('Tab');
     await page.keyboard.type('4268070338510854');
     await page.keyboard.press('Tab');
     // const cardInvalidCard = await page.getByText("El número de tarjeta no es válido.").innerText();
@@ -30,10 +36,12 @@ const { chromium } = require("playwright");
     // }
     await page.keyboard.type('06 / 26');
     await page.keyboard.press('Tab');
-    await page.keyboard.type('910');
+    await page.keyboard.type('923');
     await page.keyboard.press('Tab');
     await page.keyboard.type('jose abelardo reyes gimenez');
     await page.keyboard.press('Tab');
+    await page.keyboard.press('Tab');
+    await page.keyboard.type('10080');
     const botonSubmit = await page.locator("button[type='submit']").click();
     const msgError = await page.$(".FieldError-container");
     if (msgError) {

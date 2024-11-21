@@ -4,6 +4,7 @@ const dotenv = require("dotenv");
 const dipseastoriesRoutes = require("./routes/dipseastoriesRoutes.js");
 const paypalMioRoutes = require("./routes/paypalMioRoutes.js");
 const clipMioRoutes = require("./routes/clipMioRoutes.js");
+const accountRoutes = require("./routes/accountRoutes.js");
 
 const app = express();
 app.use(express.json());
@@ -12,6 +13,7 @@ dotenv.config();
 // configurar cors para conectar frontend
 const whitelist = [
   process.env.FRONTEND_URL,
+  process.env.FRONTEND_URL2,
 ]
 
 const corsOptions = {
@@ -27,7 +29,7 @@ const corsOptions = {
 }
 
 
-// app.use(cors(corsOptions))
+app.use(cors(corsOptions))
 
 //Routing
 app.get("/", (req, res) => {
@@ -37,6 +39,7 @@ app.get("/", (req, res) => {
 app.use("/api/stripe", dipseastoriesRoutes)
 app.use("/api/paypal", paypalMioRoutes)
 app.use("/api/clip", clipMioRoutes)
+app.use("/api/account", accountRoutes)
 
 const PORT = process.env.PORT || 4000
 app.listen(PORT, () => {

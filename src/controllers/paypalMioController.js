@@ -40,7 +40,7 @@ const charges = (req, res) => {
               message: message,
               error: cardError ? true : null,
             }
-            console.log(result);
+            // console.log(result);
             await page.close();
             await browser.close();
             return res.json(result);
@@ -68,7 +68,7 @@ const charges = (req, res) => {
       await page.waitForTimeout(1000);
       await page.keyboard.press('Tab');
       await page.keyboard.type(cardCvv, { delay: 100 });
-      await page.waitForTimeout(1000);
+      await page.waitForTimeout(2000);
       // estos dos se quitan con targetas de usa
       // await page.keyboard.press('Tab');
       if (country?.currentKey !== 'usa') {
@@ -84,8 +84,8 @@ const charges = (req, res) => {
       //   await page.keyboard.press('Tab');
       //   await page.keyboard.press('Tab');
       // }
-      await page.keyboard.press('Tab');
-      await page.keyboard.press('Tab');
+      // await page.keyboard.press('Tab');
+      // await page.keyboard.press('Tab');
       await page.waitForTimeout(1000);
       await page.keyboard.type(firstName, { delay: 100 });
       await page.waitForTimeout(1000);

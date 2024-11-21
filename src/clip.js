@@ -69,7 +69,7 @@ async function pruevas() {
         console.error('La respuesta no llegó a tiempo.', error.name);
         await browser.close();
         const res = {
-          card: `${cardNumber}|${cardExpiry.replace("/", "|")}|${cardCvv}`,
+          card: `${cardNumber}|${cardExpiry.replace(" / ", "|")}|${cardCvv}`,
           status: 'TimeoutError'
         }
         console.log(res)
