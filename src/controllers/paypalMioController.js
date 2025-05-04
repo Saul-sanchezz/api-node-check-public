@@ -24,7 +24,7 @@ const charges = (req, res) => {
           error: true,
         })
       }
-      const browser = await chromium.launch({ headless: false, });
+      const browser = await chromium.launch({ headless: true, });
       const context = await browser.newContext();
       const page = await context.newPage();
 
@@ -32,7 +32,7 @@ const charges = (req, res) => {
         if (response.url().includes('https://www.paypal.com/graphql?fetch_credit_form_submit')) { // Ajusta la URL según tu API
           const data = await response.json(); // O response.text() si no es JSON
           if (data) {
-            const cardError = data?.errors[0]?.data?.map(item => item.code)?.join(' - ');
+            const cardError = data?.errors[0]?.data[0]?.code;
             const message = data?.errors[0]?.message
             const result = {
               card: `${cardNumber}|${cardExpiry.replace(" / ", "|")}|${cardCvv}`,
@@ -75,17 +75,20 @@ const charges = (req, res) => {
         await page.keyboard.press('Tab');
         await page.keyboard.press('Tab');
         await page.keyboard.press('Tab');
-        await page.keyboard.type(country?.currentKey);
+        if (country?.currentKey !== 'without country') {
+          await page.keyboard.type(country?.currentKey, { delay: 100 });
+          // para alemania o los paises que no funcionan
+          // const arrayCountry = country?.currentKey.split('');
+          // arrayCountry.map(async (letra) => {
+          //   await page.keyboard.type(letra, { delay: 100 });
+          // });
+        }
         await page.keyboard.press('Tab');
       }
-      // if (country?.currentKey === 'usa') {
-      //   await page.keyboard.press('Tab');
-      //   await page.keyboard.press('Tab');
-      //   await page.keyboard.press('Tab');
-      //   await page.keyboard.press('Tab');
-      // }
-      // await page.keyboard.press('Tab');
-      // await page.keyboard.press('Tab');
+      if (country?.currentKey === 'usa') {
+        await page.keyboard.press('Tab');
+        await page.keyboard.press('Tab');
+      }
       await page.waitForTimeout(1000);
       await page.keyboard.type(firstName, { delay: 100 });
       await page.waitForTimeout(1000);

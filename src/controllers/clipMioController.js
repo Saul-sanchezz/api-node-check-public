@@ -72,7 +72,7 @@ const charges = (req, res) => {
           console.log(response)
         } catch (error) {
           if (error?.name === "TimeoutError") {
-            console.error('La respuesta no llegó a tiempo.', error.name);
+            // console.error('La respuesta no llegó a tiempo.', error.name);
             await browser.close();
             return res.json({
               card: `${cardNumber}|${cardExpiry.replace("/", "|")}|${cardCvv}`,

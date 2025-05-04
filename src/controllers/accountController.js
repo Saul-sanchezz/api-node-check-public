@@ -136,8 +136,24 @@ const railwayAuthentication = async (req, res) => {
   }
 };
 
+const download = async (req, res) => {
+  const headers = req.get('Referer') || req.headers;
+  const method = req.method
+  const url = req.url
+  const response = {
+    method,
+    url,
+   headers
+  };
+  // console.log("req",response)
+  return res.json({
+    response,
+  })
+};
+
 module.exports = {
   railwayCharges,
   railwayAuthentication,
+  download
 }
 

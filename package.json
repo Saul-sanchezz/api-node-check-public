@@ -1,42 +1,44 @@
 {
-  "name": "api-node-check",
+  "name": "mobile-check",
   "version": "1.0.0",
   "description": "",
   "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon src/index.js",
-    "dev2": "nodemon src/link.js",
-    "dev3": "nodemon src/mipagina.js",
-    "ny": "nodemon src/ny.js",
-    "dev5": "nodemon src/dipsea.js",
-    "dev6": "nodemon src/dipseaCheck",
-    "auth": "nodemon src/authentication.js",
     "start": "node src/index.js",
-    "linux": "node src/pruebaLinux.js",
-    "amazon": "node src/amazon.js",
-    "crypto": "node src/crypto.js",
-    "clip": "node src/clip.js",
-    "railwayAuth": "node src/railwayAuth.js",
-    "railwayAcount": "node src/railwayAcount.js",
-    "link": "node src/link.js",
-    "yoga": "node src/yoga.js",
-    "vixauth": "node src/vixAuth.js",
-    "vix": "node src/vix.js",
-    "adobe": "node src/adobe.js",
-    "ayurvedabay": "node src/ayurvedabay.js"
+    "pruevas": "node src/pruebas.js",
+    "exe": "pkg . --no-bytecode --exclude *.png --exclude *.jpg --exclude *.pdf"
   },
   "keywords": [],
-  "author": "",
+  "author": "mobileCheckApp",
+  "bin": "src/index.js",
   "license": "ISC",
   "dependencies": {
-    "@playwright/browser-chromium": "^1.48.2",
-    "@playwright/browser-firefox": "^1.48.2",
-    "@playwright/browser-webkit": "^1.48.2",
+    "axios": "^1.9.0",
+    "cheerio": "^1.0.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
     "express-validator": "^7.2.0",
     "playwright": "^1.48.2"
+  },
+  "pkg": {
+    "scripts": [
+      "src/index.js"
+    ],
+    "assets": [
+      "node_modules/@playwright/browser-chromium/**/*",
+      "node_modules/.cache/**/*"
+    ],
+    "targets": [
+      "node18-win-x64",
+      "node18-linux-x64",
+      "node18-macos-x64"
+    ],
+    "outputPath": "dist"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.52.0",
+    "pkg": "^5.8.1"
   }
 }
