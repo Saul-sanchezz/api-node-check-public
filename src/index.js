@@ -29,7 +29,7 @@ const corsOptions = {
   }
 }
 
-// app.use(cors(corsOptions));
+app.use(cors(corsOptions));
 
 // Checker of time 
 const SERVER_LIFETIME = CUATRO_HORAS // primer numero son los minutos
