@@ -333,7 +333,7 @@ const stripeAuth = async (req, res) => {
       console.log(error);
       return res.status(500).send({
         card: `${cardNumber}|${cardExpiry}|${cardCvv}`,
-        status: "Ocurrio un error",
+        status: `Ocurrio un error ${error}`,
         error: true
       })
     }
