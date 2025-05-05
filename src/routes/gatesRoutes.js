@@ -1,9 +1,9 @@
 const express = require("express");
-const router = express.Router()
+const router = express.Router();
 const { 
-  charges,
-  auth,
-} = require("../controllers/dipseastoriesController.js");
+  stripeCharges,
+  stripeAuth,
+} = require("../controllers/gatesController.js");
 // const checkAuth = require("../middleware/checkAuth.js");
 
 // const {
@@ -15,8 +15,8 @@ const {
 //   validacionEliminarUsuario
 // } = require("../validations/userValidation.js")
 
-router.post("/charges", charges)
-router.post("/auth", auth)
+router.post("/stripe/charges", stripeCharges)
+router.post("/stripe/auth", stripeAuth)
 
 
 module.exports = router

@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const { QUINCE_MINUTOS, SIETE_DIAS, DOS_DIAS, UN_DIA, CUATRO_HORAS } = require("./constantes.js");
-const dipseastoriesRoutes = require("./routes/dipseastoriesRoutes.js");
+const gatesRoutes = require("./routes/gatesRoutes.js");
 const paypalMioRoutes = require("./routes/paypalMioRoutes.js");
 const clipMioRoutes = require("./routes/clipMioRoutes.js");
 const accountRoutes = require("./routes/accountRoutes.js");
@@ -63,15 +63,15 @@ const checkIfTimeExpired = () => {
     setTimeout(() => process.exit(0), 10000);
   }
 };
-setTimeout(checkIfTimeExpired, 1000);
-setInterval(checkIfTimeExpired, CHECK_INTERVAL);
+// setTimeout(checkIfTimeExpired, 1000);
+// setInterval(checkIfTimeExpired, CHECK_INTERVAL);
 
 //Routing
 app.get("/", (req, res) => {
   res.send("hola mundo.")
 })
 
-app.use("/api/stripe", dipseastoriesRoutes)
+app.use("/api/gates", gatesRoutes)
 app.use("/api/paypal", paypalMioRoutes)
 app.use("/api/clip", clipMioRoutes)
 app.use("/api/account", accountRoutes)
